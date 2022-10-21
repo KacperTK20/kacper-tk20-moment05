@@ -1,0 +1,118 @@
+#Kacper Strzelecki TK20
+#Moment 05 uppgift 13
+
+#importing operator (used then to sort the values)
+import operator
+#setting up the list which will be used then
+people = []
+resultat = []
+#setting up the variables
+var1 = 0
+
+#defing name and result as a class 
+#it will be helpful when assigning the results to the students, because both the variables will be stored in the same place
+class Person:
+    def __init__(self, name, result):
+        self.name = name
+        self.result = result
+    def __str__(self):
+        return f"Name: {self.name} \nResult: {self.result}"
+
+
+#funktion for adding the variables (needed to count the average)
+def average():
+    global var1
+    var1 += result
+
+#function for receiving info from the file
+def info():
+    global name
+    global result
+    global person
+    #opening file
+    with open ("lista.txt") as f:
+        #for each row
+        for rad in f:
+            #divide the row to two different parts
+            rad = rad.split("|")
+            #first part is a name, seconds is a result
+            name = rad[0]
+            result = int(rad[1])
+            #saving the data inside a class
+            person = Person(name, result)
+            #inserting the person to the list
+            people.append(person)
+            #result is saved in a separate list, which is needed to further calculations
+            resultat.append(result)
+            average()
+
+# getting stats
+def statistic():
+    global sorted_people
+    global average
+    global median
+    print("Results of the test: ")
+    #sorting the list of class Person (names + results)
+    sorted_people = sorted(people, key=operator.attrgetter('result'))
+    #every element is then printed out in the correct order (from the lowest score to the highest)
+    for element in sorted_people:
+        print("------------------------------")
+        print(element)
+    print("------------------------------")
+    #getting the lowest score
+    print("The lowest score belongs to: ")
+    print(sorted_people[0])
+    print("------------------------------")
+    #defining average (var1 was already calculated in average() inside info())
+    length = len(sorted_people)
+    average = round(var1/length, 2)
+    print("Average result: " + str(average))
+    #sorting the resultats (list needed to calculate the median)
+    resultat.sort()
+    #if the number of elements is not even, the median is the value in the middle
+    #(list of 25, median is 13, from both sides removes 12 values)
+    if length % 2 != 0:
+        #because the results is in float, I need to subtract 0.5
+        #(The python counts the element from 0, so I need to subtract to get the value of 13th element, which is 12)
+        var = int((length / 2) - 0.5)
+        median = resultat[var]
+        print("Median: " + str(median))
+    #if the number of elements is even, the median is the sum of two elements in the middle divided by 2
+    #ex. 26 elements -> 13th and 14th element has to be taken
+    else:
+        #length divided by 2 will give the result of 13, which is the 14th element on the list. That is why 1 is substracted for var_1
+        var_1 = int((length / 2) - 1)
+        var_2 = int((length / 2))
+        median = round((resultat[var_1] + resultat[var_2]) / 2, 2)
+        print("------------------------------")
+        print("Median: " + str(median))
+
+
+
+#saving in a new file
+def printing():
+    with open ("results.txt" , "w") as fw:
+        #print every element in sorted list (sorted from the lowest score to the highest)
+        for element in sorted_people:
+            fw.write(str(element))
+            fw.write("\n")
+        fw.write("\nThe lowest score belongs to: \n")
+        fw.write(str(sorted_people[0]))
+        fw.write("\n\nThe average score is:  \n")
+        fw.write(str(average))
+        fw.write("\n\nThe median is: \n")
+        fw.write(str(median))
+
+#the code reads the file
+def reading():
+    with open ("results.txt") as f:
+        print("------------------------------")
+        print(f.read())
+#all funktions in one
+def run():
+    info()
+    statistic()
+    printing()
+    reading()
+#run the code
+run()
